@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Galleryit</string>
+    <string name="all">All</string>
+    <string name="image">Image</string>
+    <string name="video">Video</string>
+    <string name="close">Close</string>
+    <string name="locker">Locker</string>
+    <string name="fingerprint_unlock">Fingerprint unlock</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="set_pin">Set PIN</string>
+    <string name="set_pattern">Set unlock pattern</string>
+    <string name="draw_pattern">Draw an unlock pattern</string>
+    <string name="switch_to_pattern">Switch to pattern</string>
+    <string name="switch_to_pin">Switch to PIN</string>
+</resources>
