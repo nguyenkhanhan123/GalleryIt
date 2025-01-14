@@ -3,10 +3,12 @@ package com.dragnell.myapplication.view.fragment
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.dragnell.myapplication.CommonUtils
 import com.dragnell.myapplication.databinding.FragmentBinding
 import com.dragnell.myapplication.model.Folder
 import com.dragnell.myapplication.model.FolderImg
 import com.dragnell.myapplication.model.FolderVideo
+import com.dragnell.myapplication.view.act.CheckPassword
 import com.dragnell.myapplication.view.act.FingerprintUnlock
 import com.dragnell.myapplication.view.adapter.FolderAdapter
 import com.dragnell.myapplication.viewmodel.CommonViewModel
@@ -35,7 +37,13 @@ class FragmentAll : BaseFragment<FragmentBinding, CommonViewModel>() {
         }
 
         mbinding.locker.setOnClickListener {
-            startActivity(Intent(context, FingerprintUnlock::class.java))
+           val s = CommonUtils.getInstance().getPref("Type").toString()
+            if (s=="0"){
+                startActivity(Intent(context, FingerprintUnlock::class.java))
+            }
+            else{
+                startActivity(Intent(context, CheckPassword::class.java))
+            }
         }
     }
 

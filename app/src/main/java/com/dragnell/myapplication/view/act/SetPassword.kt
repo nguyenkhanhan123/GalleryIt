@@ -1,18 +1,27 @@
 package com.dragnell.myapplication.view.act
 
+import android.content.Intent
 import android.view.View
 import android.widget.ImageView
+import com.dragnell.myapplication.CommonUtils
 import com.dragnell.myapplication.R
 import com.dragnell.myapplication.databinding.SetPasswordBinding
+import com.dragnell.myapplication.view.PatternListener
 import com.dragnell.myapplication.viewmodel.CommonViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SetPassword : BaseActivity<SetPasswordBinding, CommonViewModel>() {
 
-    private var i: Int = 1
+    private var isPattern: Boolean = false
 
     private val password = mutableListOf<Int>()
 
     private lateinit var dotViews: List<ImageView>
+
+    private var currentInputCount = 0
 
     override fun getClassVM(): Class<CommonViewModel> {
         return CommonViewModel::class.java
@@ -22,8 +31,8 @@ class SetPassword : BaseActivity<SetPasswordBinding, CommonViewModel>() {
         dotViews = listOf(mbinding.dot1, mbinding.dot2, mbinding.dot3, mbinding.dot4)
 
         mbinding.lnSwitch.setOnClickListener {
-            if (i == 1) {
-                i = 0
+            if (!isPattern) {
+                isPattern = true
                 mbinding.tvTypePassword.text = this.getString(R.string.set_pattern)
                 mbinding.text.text = this.getString(R.string.draw_pattern)
                 mbinding.lnPin.visibility = View.GONE
@@ -31,7 +40,7 @@ class SetPassword : BaseActivity<SetPasswordBinding, CommonViewModel>() {
                 mbinding.customPatternView.visibility = View.VISIBLE
 
             } else {
-                i = 1
+                isPattern = false
                 mbinding.tvTypePassword.text = this.getString(R.string.set_pin)
                 mbinding.text.text = this.getString(R.string.set_pin)
                 mbinding.lnPin.visibility = View.VISIBLE
@@ -56,18 +65,46 @@ class SetPassword : BaseActivity<SetPasswordBinding, CommonViewModel>() {
         numberButtons.forEach { button ->
             button.setOnClickListener { onNumberClick(button.tag.toString().toInt()) }
         }
+
+        mbinding.delete.setOnClickListener {
+            if (currentInputCount > 0) {
+                password.removeAt(password.size - 1)
+                currentInputCount--
+                dotViews[currentInputCount].setImageResource(R.drawable.gray_dot)
+            }
+        }
+
+        mbinding.customPatternView.patternListener = object : PatternListener {
+            override fun onPatternDetected(selectedPoints: List<Int>) {
+                savePassword("Pattern", selectedPoints.toString())
+            }
+        }
+    }
+
+    private fun savePassword(type: String, password: String) {
+        CommonUtils.getInstance().savePref("Type", type)
+        CommonUtils.getInstance().savePref("Password", password)
+        CoroutineScope(Dispatchers.Main).launch{
+            delay(500)
+            startActivity(Intent(this@SetPassword,LockerAct::class.java))
+            finish()
+        }
     }
 
     private fun onNumberClick(number: Int) {
         if (password.size < 4) {
             password.add(number)
-            updateDots()
+            resetLnDot()
         }
     }
 
-    private fun updateDots() {
-        for (stt in 0 until password.size) {
-            dotViews[stt].setImageResource(R.drawable.white_dot)
+    private fun resetLnDot() {
+        if (currentInputCount < dotViews.size) {
+            dotViews[currentInputCount].setImageResource(R.drawable.white_dot)
+            currentInputCount++
+        }
+        if (currentInputCount == 4) {
+            savePassword("PIN", password.toString())
         }
     }
 
