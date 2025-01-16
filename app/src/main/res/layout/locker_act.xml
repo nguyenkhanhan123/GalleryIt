@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            android:fontFamily="@font/comic"
+            android:paddingHorizontal="8dp"
+            android:text="@string/locker"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="12dp"
+            android:fontFamily="@font/comic"
+            android:text="@string/close"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+        />
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="@dimen/ic"
+            android:layout_height="@dimen/ic"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="6dp"
+            android:src="@drawable/more"
+            app:tint="@color/white" />
+        />
+    </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ScrollView>
+       <ImageView
+           android:layout_width="65dp"
+           android:layout_height="65dp"
+           android:layout_margin="18dp"
+           android:src="@drawable/add"
+           app:tint="@color/white"
+           android:padding="22dp"
+           android:layout_gravity="bottom|end"
+           android:background="@drawable/bg_add"/>
+    </FrameLayout>
+</LinearLayout>

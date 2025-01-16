@@ -2,6 +2,7 @@ package com.dragnell.myapplication.viewmodel
 
 import android.os.Environment
 import android.text.format.DateFormat
+import android.util.Log
 import com.dragnell.myapplication.model.FolderImg
 import com.dragnell.myapplication.model.FolderVideo
 import com.dragnell.myapplication.model.ImgModel
@@ -104,6 +105,7 @@ class SplashViewModel : BaseViewModel() {
                 }
             }
             if (fileArrayList.isNotEmpty()) {
+                Log.i("Test","${file.name}+...+${fileArrayList[0].file}" )
                 folderArrayList.add(FolderImg(file.name, ArrayList(fileArrayList)))
             }
         }

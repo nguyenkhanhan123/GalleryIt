@@ -8,12 +8,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.dragnell.myapplication.databinding.SplashBinding
-import com.dragnell.myapplication.model.FolderImg
-import com.dragnell.myapplication.model.FolderVideo
 import com.dragnell.myapplication.viewmodel.SplashViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,40 +24,55 @@ class Splash : BaseActivity<SplashBinding, SplashViewModel>() {
     }
 
     override fun initView() {
-        if (packageManager.checkPermission(
-                Manifest.permission.READ_EXTERNAL_STORAGE, packageName
-            ) != PackageManager.PERMISSION_GRANTED || packageManager.checkPermission(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE, packageName
-            ) != PackageManager.PERMISSION_GRANTED || packageManager.checkPermission(
-                Manifest.permission.CAMERA, packageName
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-                ), 101
-            )
-
+        if (!checkAllPermissions()) {
+            requestPermissions(getRequiredPermissions(), 101)
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (Environment.isExternalStorageManager()) {
-                    viewmodel.getImgAndVideoModel()
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(2000)
-                        val intent = Intent(this@Splash, MainActivity::class.java)
-                        val bundle = Bundle()
-                        bundle.putSerializable("folderImage", viewmodel.getFolderImg())
-                        bundle.putSerializable("folderVideo", viewmodel.getFolderVideo())
-                        intent.putExtras(bundle)
-                        startActivity(intent)
-                        finish()
-                    }
+                    navigateToMainActivity()
                 } else {
                     managerAllFile()
                 }
+            } else {
+                navigateToMainActivity()
             }
+        }
+    }
+
+    private fun checkAllPermissions(): Boolean {
+        return getRequiredPermissions().all {
+            packageManager.checkPermission(it, packageName) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun getRequiredPermissions(): Array<String> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_AUDIO,
+                Manifest.permission.CAMERA
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+            )
+        }
+    }
+
+    private fun navigateToMainActivity() {
+        viewmodel.getImgAndVideoModel()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(2000)
+            val intent = Intent(this@Splash, MainActivity::class.java)
+            val bundle = Bundle()
+            bundle.putSerializable("folderImage", viewmodel.getFolderImg())
+            bundle.putSerializable("folderVideo", viewmodel.getFolderVideo())
+            intent.putExtras(bundle)
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -69,17 +81,7 @@ class Splash : BaseActivity<SplashBinding, SplashViewModel>() {
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) {
-                viewmodel.getImgAndVideoModel()
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(2000)
-                    val intent = Intent(this@Splash, MainActivity::class.java)
-                    val bundle = Bundle()
-                    bundle.putSerializable("folderImage", viewmodel.getFolderImg())
-                    bundle.putSerializable("folderVideo", viewmodel.getFolderVideo())
-                    intent.putExtras(bundle)
-                    startActivity(intent)
-                    finish()
-                }
+                navigateToMainActivity()
             } else {
                 managerAllFile()
             }
@@ -91,7 +93,7 @@ class Splash : BaseActivity<SplashBinding, SplashViewModel>() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 101) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 managerAllFile()
             } else {
                 finish()
