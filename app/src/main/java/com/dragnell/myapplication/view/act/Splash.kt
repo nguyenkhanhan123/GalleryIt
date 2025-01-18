@@ -10,17 +10,18 @@ import android.os.Environment
 import android.provider.Settings
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.dragnell.myapplication.ManageFile
 import com.dragnell.myapplication.databinding.SplashBinding
-import com.dragnell.myapplication.viewmodel.SplashViewModel
+import com.dragnell.myapplication.viewmodel.CommonViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class Splash : BaseActivity<SplashBinding, SplashViewModel>() {
+class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
 
-    override fun getClassVM(): Class<SplashViewModel> {
-        return SplashViewModel::class.java
+    override fun getClassVM(): Class<CommonViewModel> {
+        return CommonViewModel::class.java
     }
 
     override fun initView() {
@@ -63,14 +64,10 @@ class Splash : BaseActivity<SplashBinding, SplashViewModel>() {
     }
 
     private fun navigateToMainActivity() {
-        viewmodel.getImgAndVideoModel()
         CoroutineScope(Dispatchers.Main).launch {
+            ManageFile.instance.getImgAndVideoModel()
             delay(2000)
             val intent = Intent(this@Splash, MainActivity::class.java)
-            val bundle = Bundle()
-            bundle.putSerializable("folderImage", viewmodel.getFolderImg())
-            bundle.putSerializable("folderVideo", viewmodel.getFolderVideo())
-            intent.putExtras(bundle)
             startActivity(intent)
             finish()
         }

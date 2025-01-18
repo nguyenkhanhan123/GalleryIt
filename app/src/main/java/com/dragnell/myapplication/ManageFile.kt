@@ -1,5 +1,8 @@
-package com.dragnell.myapplication.viewmodel
+package com.dragnell.myapplication
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.os.Environment
 import android.text.format.DateFormat
 import android.util.Log
@@ -13,13 +16,16 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 
-class SplashViewModel : BaseViewModel() {
-
+class ManageFile {
     private var folderImage: ArrayList<FolderImg> = ArrayList()
 
     private var folderVideo: ArrayList<FolderVideo> = ArrayList()
 
-    open fun getImgAndVideoModel() {
+    companion object {
+        val instance: ManageFile by lazy { ManageFile() }
+    }
+
+     fun getImgAndVideoModel() {
         CoroutineScope(Dispatchers.IO).launch {
             val file = File("/storage/ace-999")
             folderImage.addAll(getAllImg(Environment.getExternalStorageDirectory()))
@@ -31,11 +37,11 @@ class SplashViewModel : BaseViewModel() {
         }
     }
 
-    open fun getFolderImg(): ArrayList<FolderImg> {
+    fun getFolderImg(): ArrayList<FolderImg> {
         return folderImage
     }
 
-    open fun getFolderVideo(): ArrayList<FolderVideo> {
+    fun getFolderVideo(): ArrayList<FolderVideo> {
         return folderVideo
     }
 
@@ -54,6 +60,9 @@ class SplashViewModel : BaseViewModel() {
                     folderArrayList.addAll(getAllVideo(singleFile))
                 } else {
                     if (singleFile.name.lowercase(Locale.getDefault()).endsWith(".mp4")) {
+                        val retriever = MediaMetadataRetriever()
+                        retriever.setDataSource(singleFile.absolutePath)
+                        val firstFrame: Bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST)!!
                         fileArrayList.add(
                             VideoModel(
                                 singleFile,
@@ -112,6 +121,5 @@ class SplashViewModel : BaseViewModel() {
 
         return folderArrayList
     }
-
 
 }

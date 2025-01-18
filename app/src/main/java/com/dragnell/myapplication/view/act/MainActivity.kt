@@ -7,8 +7,6 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import com.dragnell.myapplication.R
 import com.dragnell.myapplication.databinding.ActivityMainBinding
-import com.dragnell.myapplication.model.FolderImg
-import com.dragnell.myapplication.model.FolderVideo
 import com.dragnell.myapplication.view.adapter.CommonTabAdapter
 import com.dragnell.myapplication.view.fragment.FragmentAll
 import com.dragnell.myapplication.view.fragment.FragmentImage
@@ -18,41 +16,14 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : BaseActivity<ActivityMainBinding,CommonViewModel>() {
 
-    private var folderImage : ArrayList<FolderImg> = ArrayList()
-    private var folderVideo : ArrayList<FolderVideo> = ArrayList()
-
     override fun getClassVM(): Class<CommonViewModel> {
         return CommonViewModel::class.java
     }
 
     override fun initView() {
-        val bundle = intent.extras
-        if (bundle != null) {
-             folderImage  = bundle.getSerializable("folderImage") as ArrayList<FolderImg>
-             folderVideo = bundle.getSerializable("folderVideo") as ArrayList<FolderVideo>
-        }
-
-        val fragmentAll = FragmentAll().apply {
-            arguments = Bundle().apply {
-                putSerializable("folderImage", folderImage)
-                putSerializable("folderVideo", folderVideo)
-            }
-        }
-
-        val fragmentImage = FragmentImage().apply {
-            arguments = Bundle().apply {
-                putSerializable("folderImage", folderImage)
-            }
-        }
-
-        val fragmentVideo = FragmentVideo().apply {
-            arguments = Bundle().apply {
-                putSerializable("folderVideo", folderVideo)
-            }
-        }
 
         val listFragment: ArrayList<Fragment> = arrayListOf(
-            fragmentAll,fragmentImage, fragmentVideo
+            FragmentAll(),FragmentImage(), FragmentVideo()
         )
         val tabIds: ArrayList<Long> = arrayListOf(
             resources.getString(R.string.all).hashCode().toLong(),

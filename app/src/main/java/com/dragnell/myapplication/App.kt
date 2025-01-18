@@ -1,7 +1,9 @@
 package com.dragnell.myapplication
+
 import android.app.Application
 
 class App : Application() {
+
     private var storage: Storage = Storage()
     override fun onCreate() {
         super.onCreate()

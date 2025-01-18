@@ -4,6 +4,7 @@ import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.dragnell.myapplication.ManageFile
 import com.dragnell.myapplication.databinding.FragmentBinding
 import com.dragnell.myapplication.model.Folder
 import com.dragnell.myapplication.model.FolderImg
@@ -21,9 +22,7 @@ class FragmentVideo : BaseFragment<FragmentBinding, CommonViewModel>() {
     }
 
     override fun initView() {
-        arguments?.let {
-            folderVideo = (it.getSerializable("folderVideo") as? ArrayList<FolderVideo>)!!
-        }
+        folderVideo=ManageFile.instance.getFolderVideo()
 
         val folder: ArrayList<Any> = ArrayList()
 

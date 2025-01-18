@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.dragnell.myapplication.CommonUtils
+import com.dragnell.myapplication.ManageFile
 import com.dragnell.myapplication.databinding.FragmentBinding
 import com.dragnell.myapplication.model.Folder
 import com.dragnell.myapplication.model.FolderImg
@@ -25,9 +26,7 @@ class FragmentImage : BaseFragment<FragmentBinding, CommonViewModel>() {
     }
 
     override fun initView() {
-        arguments?.let {
-            folderImage = (it.getSerializable("folderImage") as? ArrayList<FolderImg>)!!
-        }
+        folderImage=ManageFile.instance.getFolderImg()
 
         val folder: ArrayList<Any> = ArrayList()
 

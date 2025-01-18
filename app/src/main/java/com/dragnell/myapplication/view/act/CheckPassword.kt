@@ -2,8 +2,12 @@ package com.dragnell.myapplication.view.act
 
 import android.content.Intent
 import android.graphics.Color
+import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import com.dragnell.myapplication.CommonUtils
 import com.dragnell.myapplication.R
 import com.dragnell.myapplication.databinding.CheckPasswordBinding
@@ -15,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class CheckPassword : BaseActivity<CheckPasswordBinding, CommonViewModel>() {
+
     private val password = mutableListOf<Int>()
 
     private lateinit var dotViews: List<ImageView>
@@ -23,6 +28,39 @@ class CheckPassword : BaseActivity<CheckPasswordBinding, CommonViewModel>() {
 
     override fun getClassVM(): Class<CommonViewModel> {
         return CommonViewModel::class.java
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val s = CommonUtils.getInstance().getPref("isCheckBiometric")
+        if (s == "Yes"){
+            val executor = ContextCompat.getMainExecutor(this)
+            val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    startActivity(Intent(this@CheckPassword, LockerAct::class.java))
+                    Log.i("Vân tay","OK")
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Log.i("Vân tay","Thất bại")
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    Log.i("Vân tay","Lỗi")
+                }
+            })
+
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Quét vân tay")
+                .setSubtitle("Xác thực để tiếp tục")
+                .setNegativeButtonText("Hủy")
+                .build()
+
+            biometricPrompt.authenticate(promptInfo)
+        }
     }
 
     override fun initView() {
@@ -71,14 +109,14 @@ class CheckPassword : BaseActivity<CheckPasswordBinding, CommonViewModel>() {
                 if (checkPassword(selectedPoints.toString())) {
                     CoroutineScope(Dispatchers.Main).launch {
                         mbinding.customPatternView.updateColors(Color.GREEN)
-                        delay(500)
+                        delay(200)
                         startActivity(Intent(this@CheckPassword, LockerAct::class.java))
                         finish()
                     }
                 } else {
                     CoroutineScope(Dispatchers.Main).launch {
                         mbinding.customPatternView.updateColors(Color.RED)
-                        delay(500)
+                        delay(200)
                         mbinding.customPatternView.resetPattern()
                     }
                 }
@@ -107,14 +145,14 @@ class CheckPassword : BaseActivity<CheckPasswordBinding, CommonViewModel>() {
             if (checkPassword(password.toString())) {
                 CoroutineScope(Dispatchers.Main).launch {
                     resetColorLnDot(R.drawable.green_dot)
-                    delay(500)
+                    delay(200)
                     startActivity(Intent(this@CheckPassword, LockerAct::class.java))
                     finish()
                 }
             } else {
                 CoroutineScope(Dispatchers.Main).launch {
                     resetColorLnDot(R.drawable.red_dot)
-                    delay(500)
+                    delay(200)
                     resetColorLnDot(R.drawable.gray_dot)
                     currentInputCount = 0
                     password.clear()
