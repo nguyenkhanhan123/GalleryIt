@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import androidx.activity.result.ActivityResult
@@ -17,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
 
@@ -65,13 +65,17 @@ class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
 
     private fun navigateToMainActivity() {
         CoroutineScope(Dispatchers.Main).launch {
-            ManageFile.instance.getImgAndVideoModel()
+            loadData()
             delay(2000)
-            val intent = Intent(this@Splash, MainActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this@Splash, MainActivity::class.java))
             finish()
         }
     }
+
+    private suspend fun loadData() = withContext(Dispatchers.IO) {
+        ManageFile.instance.getImgAndVideoModel()
+    }
+
 
     private var activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
         ActivityResultContracts.StartActivityForResult()

@@ -12,7 +12,9 @@ import com.dragnell.myapplication.model.ImgModel
 import com.dragnell.myapplication.model.VideoModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Locale
 
@@ -25,15 +27,24 @@ class ManageFile {
         val instance: ManageFile by lazy { ManageFile() }
     }
 
-     fun getImgAndVideoModel() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val file = File("/storage/ace-999")
-            folderImage.addAll(getAllImg(Environment.getExternalStorageDirectory()))
-            folderVideo.addAll(getAllVideo(Environment.getExternalStorageDirectory()))
-            if (file.exists()) {
-                folderImage.addAll(getAllImg(file))
-                folderVideo.addAll(getAllVideo(file))
-            }
+    suspend fun getImgAndVideoModel() {
+        withContext(Dispatchers.IO) {
+            val defaultDir = Environment.getExternalStorageDirectory()
+            val customDir = File("/storage/ace-999")
+
+            folderImage.clear()
+            folderVideo.clear()
+
+            val imgFromDefaultDir = async { getAllImg(defaultDir) }
+            val videoFromDefaultDir = async { getAllVideo(defaultDir) }
+
+            val imgFromCustomDir = async { if (customDir.exists()) getAllImg(customDir) else emptyList() }
+            val videoFromCustomDir = async { if (customDir.exists()) getAllVideo(customDir) else emptyList() }
+
+            folderImage.addAll(imgFromDefaultDir.await())
+            folderVideo.addAll(videoFromDefaultDir.await())
+            folderImage.addAll(imgFromCustomDir.await())
+            folderVideo.addAll(videoFromCustomDir.await())
         }
     }
 
@@ -45,7 +56,7 @@ class ManageFile {
         return folderVideo
     }
 
-    private fun getAllVideo(file: File): ArrayList<FolderVideo> {
+    private suspend fun getAllVideo(file: File): ArrayList<FolderVideo> = withContext(Dispatchers.IO) {
         val folderArrayList = ArrayList<FolderVideo>()
         val files = file.listFiles()
 
@@ -53,23 +64,29 @@ class ManageFile {
             val fileArrayList = ArrayList<VideoModel>()
 
             for (singleFile in files) {
-                if (singleFile.isDirectory && !singleFile.isHidden && !singleFile.name.contains("Telegram") && !singleFile.parent.contains(
-                        "Telegram"
-                    )
+                if (singleFile.isDirectory && !singleFile.isHidden &&
+                    !singleFile.name.contains("Telegram", true) &&
+                    !singleFile.parent.contains("Telegram", true)
                 ) {
-                    folderArrayList.addAll(getAllVideo(singleFile))
-                } else {
-                    if (singleFile.name.lowercase(Locale.getDefault()).endsWith(".mp4")) {
-                        val retriever = MediaMetadataRetriever()
+                    folderArrayList.addAll(getAllVideo(singleFile)) // Đệ quy
+                } else if (singleFile.name.lowercase(Locale.getDefault()).endsWith(".mp4")) {
+                    val retriever = MediaMetadataRetriever()
+                    try {
                         retriever.setDataSource(singleFile.absolutePath)
-                        val firstFrame: Bitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST)!!
-                        fileArrayList.add(
-                            VideoModel(
-                                singleFile,
-                                DateFormat.format("dd/MM/yyyy", singleFile.lastModified())
-                                    .toString()
+                        val firstFrame: Bitmap? = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST)
+                        if (firstFrame != null) {
+                            fileArrayList.add(
+                                VideoModel(
+                                    singleFile,
+                                    DateFormat.format("dd/MM/yyyy", singleFile.lastModified()).toString(),
+                                    firstFrame
+                                )
                             )
-                        )
+                        }
+                    } catch (e: Exception) {
+                        Log.e("ManageFile", "Error processing video: ${singleFile.name}, ${e.message}")
+                    } finally {
+                        retriever.release()
                     }
                 }
             }
@@ -79,11 +96,11 @@ class ManageFile {
             }
         }
 
-        return folderArrayList
+        return@withContext folderArrayList
     }
 
 
-    private fun getAllImg(file: File): ArrayList<FolderImg> {
+    private suspend fun getAllImg(file: File): ArrayList<FolderImg> = withContext(Dispatchers.IO) {
         val folderArrayList = ArrayList<FolderImg>()
         val files = file.listFiles()
 
@@ -91,35 +108,29 @@ class ManageFile {
             val fileArrayList = ArrayList<ImgModel>()
 
             for (singleFile in files) {
-                if (singleFile.isDirectory && !singleFile.isHidden && !singleFile.name.contains("Telegram") && !singleFile.parent.contains(
-                        "Telegram"
-                    )
+                if (singleFile.isDirectory && !singleFile.isHidden &&
+                    !singleFile.name.contains("Telegram", true) &&
+                    !singleFile.parent.contains("Telegram", true)
                 ) {
-                    folderArrayList.addAll(getAllImg(singleFile))
-
-                } else {
-                    if (singleFile.name.lowercase(Locale.getDefault())
-                            .endsWith(".jpg") || singleFile.name.lowercase(Locale.getDefault())
-                            .endsWith(".jpeg") || singleFile.name.lowercase(Locale.getDefault())
-                            .endsWith(".png")
-                    ) {
-                        fileArrayList.add(
-                            ImgModel(
-                                singleFile,
-                                DateFormat.format("dd/MM/yyyy", singleFile.lastModified())
-                                    .toString()
-                            )
+                    folderArrayList.addAll(getAllImg(singleFile)) // Đệ quy
+                } else if (singleFile.name.lowercase(Locale.getDefault()).run { endsWith(".jpg") || endsWith(".jpeg") || endsWith(".png") }) {
+                    val bitmap = BitmapFactory.decodeFile(singleFile.absolutePath)
+                    fileArrayList.add(
+                        ImgModel(
+                            singleFile,
+                            DateFormat.format("dd/MM/yyyy", singleFile.lastModified()).toString(),
+                            bitmap
                         )
-                    }
+                    )
                 }
             }
+
             if (fileArrayList.isNotEmpty()) {
-                Log.i("Test","${file.name}+...+${fileArrayList[0].file}" )
                 folderArrayList.add(FolderImg(file.name, ArrayList(fileArrayList)))
             }
         }
 
-        return folderArrayList
+        return@withContext folderArrayList
     }
 
 }

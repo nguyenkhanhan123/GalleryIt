@@ -40,6 +40,7 @@ class CheckPassword : BaseActivity<CheckPasswordBinding, CommonViewModel>() {
                     super.onAuthenticationSucceeded(result)
                     startActivity(Intent(this@CheckPassword, LockerAct::class.java))
                     Log.i("Vân tay","OK")
+                    finish()
                 }
 
                 override fun onAuthenticationFailed() {
