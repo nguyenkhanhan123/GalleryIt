@@ -27,7 +27,24 @@
         android:fontFamily="@font/comic"
         android:text="GALLERYIT"
         android:textColor="@color/white"
-        android:textSize="24dp"
-        android:layout_marginBottom="3dp"
+        android:textSize="24sp"
         tools:ignore="HardcodedText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="111dp"/>
+
+    <include
+        android:id="@+id/included_loading"
+        layout="@layout/loading"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/comic"
+        android:text="Loading..."
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        tools:ignore="HardcodedText" />
+
 </LinearLayout>

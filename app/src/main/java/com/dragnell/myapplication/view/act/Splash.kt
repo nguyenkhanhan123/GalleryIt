@@ -1,12 +1,16 @@
 package com.dragnell.myapplication.view.act
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
+import android.util.TypedValue
+import android.view.animation.LinearInterpolator
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.dragnell.myapplication.ManageFile
@@ -14,17 +18,24 @@ import com.dragnell.myapplication.databinding.SplashBinding
 import com.dragnell.myapplication.viewmodel.CommonViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
+
+    private lateinit var animator : ObjectAnimator
 
     override fun getClassVM(): Class<CommonViewModel> {
         return CommonViewModel::class.java
     }
 
     override fun initView() {
+        animator = ObjectAnimator.ofFloat(mbinding.includedLoading.view, "translationX", 0f, dpToPx(this,142f))
+        animator.duration = 850
+        animator.repeatCount = ObjectAnimator.INFINITE
+        animator.repeatMode = ObjectAnimator.RESTART
+        animator.interpolator = LinearInterpolator()
+        animator.start()
         if (!checkAllPermissions()) {
             requestPermissions(getRequiredPermissions(), 101)
         } else {
@@ -39,6 +50,13 @@ class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
             }
         }
     }
+
+    fun dpToPx(context: Context, dp: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics
+        )
+    }
+
 
     private fun checkAllPermissions(): Boolean {
         return getRequiredPermissions().all {
@@ -66,7 +84,7 @@ class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
     private fun navigateToMainActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             loadData()
-            delay(2000)
+            animator.end()
             startActivity(Intent(this@Splash, MainActivity::class.java))
             finish()
         }
