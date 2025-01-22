@@ -45,6 +45,7 @@
         <activity android:name=".view.act.CheckPassword" />
         <activity android:name=".view.act.SetPassword" />
         <activity android:name=".view.act.LockerAct" />
+        <activity android:name=".view.act.DetailFolderAct"/>
     </application>
 
 </manifest>

@@ -2,32 +2,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    android:orientation="vertical"
-    tools:context=".view.act.MainActivity">
-
+    android:orientation="vertical">
     <LinearLayout
         android:id="@+id/lnGalleryit"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginBottom="12dp"
-        android:orientation="horizontal"
-        tools:ignore="ExtraText">
-
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="@dimen/ic"
+            android:layout_height="@dimen/ic"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="12dp"
+            android:src="@drawable/back"
+            app:tint="@color/white" />
         <TextView
+            android:id="@+id/tvTypePassword"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="3"
             android:fontFamily="@font/comic"
             android:paddingHorizontal="8dp"
-            android:text="@string/app_name"
+            android:text="Tên folder"
             android:textColor="@color/white"
-            android:textSize="24sp" />
-
+            android:textSize="24sp"
+            tools:ignore="HardcodedText" />
         <ImageView
             android:layout_width="@dimen/ic"
             android:layout_height="@dimen/ic"
@@ -35,18 +38,6 @@
             android:layout_marginHorizontal="12dp"
             android:src="@drawable/search"
             app:tint="@color/white" />
-
-
-        <ImageView
-            android:id="@+id/camera"
-            android:layout_width="@dimen/ic"
-            android:layout_height="@dimen/ic"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="12dp"
-            android:src="@drawable/photo_camera"
-            app:tint="@color/white" />
-        />
-
         <ImageView
             android:id="@+id/more"
             android:layout_width="@dimen/ic"
@@ -55,34 +46,27 @@
             android:layout_marginHorizontal="6dp"
             android:src="@drawable/more"
             app:tint="@color/white" />
-        />
     </LinearLayout>
-
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tablayout"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_gravity="bottom"
-            android:layout_margin="22dp"
-            android:background="@drawable/bg_tablayout"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="#FE2E4D"
-            app:tabIndicatorHeight="2dp"
-            app:tabMinWidth="200dp"
-            app:tabSelectedTextColor="@color/white"
-            app:tabTextAppearance="@style/CustomTextAppearanceTab"
-            app:tabTextColor="#B4B4B4"
-            tools:ignore="SpeakableTextPresentCheck" />
-    </FrameLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_file"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="4"
+                tools:ignore="SpeakableTextPresentCheck"
+                tools:listitem="@layout/item_file" />
 
+        </LinearLayout>
+
+
+    </ScrollView>
 </LinearLayout>

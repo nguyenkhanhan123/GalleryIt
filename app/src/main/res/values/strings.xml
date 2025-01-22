@@ -15,4 +15,5 @@
     <string name="switch_to_pin">Switch to PIN</string>
     <string name="use_pattern_or_fingerprint">Use pattern or fingerprint</string>
     <string name="use_pin_or_fingerprint">Use PIN or fingerprint</string>
+    <string name="time">00:00</string>
 </resources>

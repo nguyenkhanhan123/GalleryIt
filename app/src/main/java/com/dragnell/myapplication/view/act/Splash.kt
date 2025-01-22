@@ -18,6 +18,7 @@ import com.dragnell.myapplication.databinding.SplashBinding
 import com.dragnell.myapplication.viewmodel.CommonViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -85,6 +86,7 @@ class Splash : BaseActivity<SplashBinding, CommonViewModel>() {
         CoroutineScope(Dispatchers.Main).launch {
             loadData()
             animator.end()
+            delay(555)
             startActivity(Intent(this@Splash, MainActivity::class.java))
             finish()
         }

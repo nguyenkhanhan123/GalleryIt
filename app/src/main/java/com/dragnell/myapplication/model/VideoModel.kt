@@ -5,5 +5,5 @@ import java.io.File
 import java.io.Serializable
 
 data class VideoModel(
-    var file: File? = null, var date: String? = null, var bitmap: Bitmap?= null
+    var file: File? = null, var date: String? = null
 ) : Serializable

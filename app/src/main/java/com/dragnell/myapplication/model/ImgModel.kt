@@ -5,5 +5,5 @@ import java.io.File
 import java.io.Serializable
 
 data class ImgModel(
-    var file: File? = null, var date: String? = null, var bitmap: Bitmap?
+    var file: File? = null, var date: String? = null
 ) : Serializable

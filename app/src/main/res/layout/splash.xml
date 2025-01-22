@@ -32,7 +32,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="111dp"/>
+        android:layout_height="151dp"/>
 
     <include
         android:id="@+id/included_loading"
