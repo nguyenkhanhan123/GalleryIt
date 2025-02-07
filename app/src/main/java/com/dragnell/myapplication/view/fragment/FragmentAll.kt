@@ -2,6 +2,7 @@ package com.dragnell.myapplication.view.fragment
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.biometric.BiometricManager
@@ -20,6 +21,11 @@ class FragmentAll : BaseFragment<FragmentBinding, CommonViewModel>() {
 
     override fun getClassVM(): Class<CommonViewModel> {
         return CommonViewModel::class.java
+    }
+
+    override fun onResume() {
+        ManageFile.instance.merge("All")
+        super.onResume()
     }
 
     override fun initView() {

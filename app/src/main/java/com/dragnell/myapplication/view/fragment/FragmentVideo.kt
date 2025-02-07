@@ -16,6 +16,11 @@ class FragmentVideo : BaseFragment<FragmentBinding, CommonViewModel>() {
        return CommonViewModel::class.java
     }
 
+    override fun onResume() {
+        ManageFile.instance.merge("Video")
+        super.onResume()
+    }
+
     override fun initView() {
         val folder = ManageFile.instance.merge("Video")
 

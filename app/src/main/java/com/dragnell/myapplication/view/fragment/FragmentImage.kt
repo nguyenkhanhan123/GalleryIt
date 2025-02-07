@@ -18,6 +18,11 @@ class FragmentImage : BaseFragment<FragmentBinding, CommonViewModel>() {
        return CommonViewModel::class.java
     }
 
+    override fun onResume() {
+        ManageFile.instance.merge("Image")
+        super.onResume()
+    }
+
     override fun initView() {
         val folder = ManageFile.instance.merge("Image")
 
